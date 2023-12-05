@@ -1,4 +1,4 @@
-package com.barisgungorr.todoappcompose.notesaddscreen
+package com.barisgungorr.todoappcompose.notesdetailscreen
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -16,7 +16,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -31,15 +30,15 @@ import com.barisgungorr.todoappcompose.R
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun AddNotesScreen() {
-    val noteTitle = remember{ mutableStateOf("")}
-        val note = remember{mutableStateOf("")}
+fun NoteDetailScreen() {
+    val noteTitle = remember{ mutableStateOf("") }
+    val note = remember{ mutableStateOf("") }
     val localFocusManager = LocalFocusManager.current //
 
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(text = "Registration Page") })
+            TopAppBar(title = { Text(text = "Detail Page") })
         },
         content = {
             Column(
@@ -61,7 +60,7 @@ fun AddNotesScreen() {
                 OutlinedTextField(
                     value = note.value,
                     onValueChange = { note.value = it },
-                    label = { Text("Not İçeriği") },
+                    label = { Text("Note Field") },
                     textStyle = MaterialTheme.typography.titleLarge,
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
                     modifier = Modifier
@@ -74,9 +73,9 @@ fun AddNotesScreen() {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                          noteTitle.value
-                             note.value
-                    Log.e("Note Saved","$noteTitle - $note")
+                    noteTitle.value
+                    note.value
+                    Log.e("Note Update","$noteTitle - $note")
 
                     /*
                     LaunchedEffect(navController) {
@@ -90,7 +89,7 @@ fun AddNotesScreen() {
 
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.baseline_bookmark_24),
+                    painter = painterResource(id = R.drawable.baseline_published_with_changes_24),
                     contentDescription = "",
                     tint = Color.White
                 )
