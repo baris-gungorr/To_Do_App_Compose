@@ -16,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -25,15 +26,21 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.barisgungorr.entity.Notes
 import com.barisgungorr.todoappcompose.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun NoteDetailScreen() {
+fun NoteDetailScreen(getNote: Notes) {
     val noteTitle = remember{ mutableStateOf("") }
     val note = remember{ mutableStateOf("") }
     val localFocusManager = LocalFocusManager.current //
+
+    LaunchedEffect(key1 = true) {
+        noteTitle.value = getNote.noteTitle
+        note.value = getNote.note
+    }
 
 
     Scaffold(
@@ -75,7 +82,7 @@ fun NoteDetailScreen() {
                 onClick = {
                     noteTitle.value
                     note.value
-                    Log.e("Note Update","$noteTitle - $note")
+                    Log.e("Note Update","${getNote.noteId}  $noteTitle - $note")
 
                     /*
                     LaunchedEffect(navController) {
