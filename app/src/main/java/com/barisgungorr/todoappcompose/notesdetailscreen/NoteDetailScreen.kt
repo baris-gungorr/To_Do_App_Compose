@@ -15,6 +15,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -45,7 +46,14 @@ fun NoteDetailScreen(getNote: Notes) {
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(text = "Detail Page") })
+            TopAppBar(
+                title = { Text(text = "Detail Page") },
+                    colors = TopAppBarDefaults.smallTopAppBarColors(
+                    containerColor = colorResource(id = R.color.purple),
+                    titleContentColor = Color.White
+                )
+            )
+
         },
         content = {
             Column(
