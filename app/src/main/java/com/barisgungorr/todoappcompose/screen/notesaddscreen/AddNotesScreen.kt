@@ -1,4 +1,4 @@
-package com.barisgungorr.todoappcompose.notesaddscreen
+package com.barisgungorr.todoappcompose.screen.notesaddscreen
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -27,7 +27,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.barisgungorr.todoappcompose.R
+import com.barisgungorr.todoappcompose.viewmodel.NotesAddViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -36,7 +38,7 @@ fun AddNotesScreen() {
     val noteTitle = remember{ mutableStateOf("")}
         val note = remember{mutableStateOf("")}
 
-
+    val viewModel: NotesAddViewModel = viewModel()
 
     Scaffold(
         topBar = {
@@ -68,7 +70,7 @@ fun AddNotesScreen() {
                 OutlinedTextField(
                     value = note.value,
                     onValueChange = { note.value = it },
-                    label = { Text("Not İçeriği") },
+                    label = { Text("Note description") },
                     textStyle = MaterialTheme.typography.titleLarge,
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
                     modifier = Modifier
@@ -81,16 +83,10 @@ fun AddNotesScreen() {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                          noteTitle.value
-                             note.value
-                    Log.e("Note Saved","$noteTitle - $note")
+                            noteTitle.value
+                            note.value
+                            viewModel.addNewNotes(noteTitle.value,note.value)
 
-                    /*
-                    LaunchedEffect(navController) {
-                        delay(2000) // 2 saniye bekleme
-                        navController.navigate("AnaSayfa") // Ana sayfa rotasına yönlendir
-                    }
-                    */
                 },
                 containerColor = colorResource(id = R.color.purple),
                 contentColor = Color.White

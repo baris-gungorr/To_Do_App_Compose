@@ -1,4 +1,4 @@
-package com.barisgungorr.activity
+package com.barisgungorr.todoappcompose.activity
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,31 +28,31 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalMapOf
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.barisgungorr.entity.Notes
+import com.barisgungorr.todoappcompose.data.Notes
 import com.barisgungorr.todoappcompose.R
-import com.barisgungorr.todoappcompose.notesaddscreen.AddNotesScreen
-import com.barisgungorr.todoappcompose.notesdetailscreen.NoteDetailScreen
+import com.barisgungorr.todoappcompose.screen.notesaddscreen.AddNotesScreen
+import com.barisgungorr.todoappcompose.screen.notesdetailscreen.NoteDetailScreen
 import com.barisgungorr.todoappcompose.ui.theme.ToDoAppComposeTheme
+import com.barisgungorr.todoappcompose.viewmodel.HomeScreenViewModel
 import com.google.gson.Gson
-import java.time.format.TextStyle
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,7 +93,7 @@ fun PageTransition() {
             navArgument("note") {type = NavType.StringType}
         )) {
             val json = it.arguments?.getString("note")
-            val objects = Gson().fromJson(json,Notes::class.java)
+            val objects = Gson().fromJson(json, Notes::class.java)
             NoteDetailScreen(objects)
 
         }
@@ -105,17 +106,12 @@ fun PageTransition() {
 fun HomeScreen(navController: NavController) {
     val searchCurrent = remember { mutableStateOf(false) }
     val searchValue = remember { mutableStateOf("") }
-    val noteList = remember { mutableStateListOf<Notes>() }
 
-    LaunchedEffect(key1 = true ) {
-        val n1 = Notes(1,"Selamlar","loremıpsum")
-            val n2 = Notes(1,"Selamlar2","loremı")
-        val n3 = Notes(1,"Selamlar3","loremıp")
-        noteList.add(n1)
-        noteList.add(n2)
-        noteList.add(n3)
+    val viewModel: HomeScreenViewModel = viewModel()
+    val noteList = viewModel.notesList.observeAsState(listOf())
 
-    }
+
+
 
     Scaffold(
         topBar = {
@@ -127,7 +123,7 @@ fun HomeScreen(navController: NavController) {
                             value = searchValue.value,
                             onValueChange = {
                                 searchValue.value = it
-                                Log.e("searchValue", it)
+                                viewModel.searchNotes(searchValue.value)
                             },
 
                             label = { Text(text = "Search", color = Color.White) },
@@ -176,22 +172,26 @@ fun HomeScreen(navController: NavController) {
             )
         },
         content = {
-                  LazyColumn{
+                  LazyColumn(
+                      contentPadding = PaddingValues(top = 60.dp),
+                  ) {
                       items(
-                          count = noteList.count(),
+                          count = noteList.value!!.count(),
                           itemContent = {
-                              val note = noteList[it]
+                              val note = noteList.value!![it]
+
                               Card(modifier = Modifier
                                   .padding(top = 10.dp)
                                   .fillMaxWidth()) {
 
                                   Row(
-                                      modifier = Modifier.fillMaxWidth()
+                                      modifier = Modifier
+                                          .fillMaxWidth()
                                           .clickable {
-                                      val notesJson = Gson().toJson(note)
-                                      navController.navigate("noteDetailScreen/${notesJson}")
+                                              val notesJson = Gson().toJson(note)
+                                              navController.navigate("noteDetailScreen/${notesJson}")
 
-                                  }) {
+                                          }) {
                                       Row(
                                           modifier = Modifier
                                               .padding(top = 10.dp)
@@ -202,7 +202,7 @@ fun HomeScreen(navController: NavController) {
                                           Text(text = "${note.noteTitle} - ${note.note}")
 
                                          IconButton(onClick = {
-                                            Log.e("Note Delete","${note.noteId}")
+                                                viewModel.deleteNotes(note.noteId)
                                          }) {
                                              Icon(painter = painterResource(id = R.drawable.baseline_delete_outline_24),
                                                  contentDescription = "", tint = Color.Gray )
@@ -213,7 +213,7 @@ fun HomeScreen(navController: NavController) {
                               }
                           }
                       )
-                  }
+                    }
         },
         floatingActionButton = {
             FloatingActionButton(

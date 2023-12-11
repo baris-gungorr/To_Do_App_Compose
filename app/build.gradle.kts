@@ -67,6 +67,12 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
+    //Navigation Compose
     implementation("androidx.navigation:navigation-compose:2.5.0")
     implementation ("com.google.code.gson:gson:2.10.1")
+    //ViewModel
+    implementation("androidx.navigation:navigation-compose:2.4.0-aplha02")
+    //LiveData
+    implementation("androidx.compose.runtime:runtime-livedata:1.0.0-beta08")
+
 }
